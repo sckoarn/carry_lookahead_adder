@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 -- File Downloaded from Nandland.com
 -- Added Self Checking Capability to the testbench
+-- Added generics for command line control of optional features.  KC
 -------------------------------------------------------------------------------
 library ieee;
 use ieee.std_logic_1164.all;
@@ -25,15 +26,13 @@ begin
     end if;
     report "Width is: " & integer'image(c_WIDTH);
     report "ADD_ERRORS: " & boolean'image(ADD_ERRORS);
+    report "Iterations: " & integer'image(NUM_ITERATIONS);
+    report "Clock Period: " & time'image(CLK_PERIOD);
     wait;
   end process;
 end carry_lookahead_adder_tb;
 
 architecture behave of carry_lookahead_adder_tb is
-
-  --constant NUM_ITERATIONS : integer := 10;
-  --constant c_WIDTH : integer := 3;
-  --constant CLK_PERIOD : time := 10 ns;
 
   signal clk : std_logic := '0';
   signal r_ADD_1  : std_logic_vector(c_WIDTH-1 downto 0) := (others => '0');
@@ -90,7 +89,7 @@ begin
             r_ADD_1 <= std_logic_vector(to_unsigned(op1, r_ADD_1'length));
             r_ADD_2 <= std_logic_vector(to_unsigned(op2, r_ADD_2'length));
             if(VERBOSITY = true) then
-              --report "[" & time'image(now) & "] [carry_lookahead_adder_tb/Stimulus] New values: r_add1=" & integer'image(add_1) & ", r_add2=" & integer'image(add_2);
+              report "[" & time'image(now) & "] [carry_lookahead_adder_tb/Stimulus] New values: r_add1=" & integer'image(add_1) & ", r_add2=" & integer'image(add_2);
             end if;
             checker_result := add_1 + add_2;
 
@@ -103,7 +102,7 @@ begin
             end if;
 
             if (result = checker_result and VERBOSITY) then
-              --report "[" & time'image(now) & "] [carry_lookahead_adder_tb/Checker] Info: Sum is correct: r_add1=" & integer'image(add_1) & ", r_add2=" & integer'image(add_2) & ", result=" & integer'image(result);
+              report "[" & time'image(now) & "] [carry_lookahead_adder_tb/Checker] Info: Sum is correct: r_add1=" & integer'image(add_1) & ", r_add2=" & integer'image(add_2) & ", result=" & integer'image(result);
             end if;
             if (result /= checker_result) then
               report "[" & time'image(now) & "] [carry_lookahead_adder_tb/Checker] Error: Sum is incorrect: r_add1=" & integer'image(add_1) & ", r_add2=" & integer'image(add_2) & ", exp_result=" & integer'image(checker_result) & ", result=" & integer'image(result);
@@ -136,17 +135,5 @@ begin
       report "Test: PASSED (" & integer'image(error_cnt) & " errors encountered)" severity failure;
     end if;
   end process check;
-
-  process
-  begin
-    if(VERBOSITY = true) then
-      report "VERBOSITY  True";
-    else
-      report "VERBOSITY  False";
-    end if;
-    report "Width is: " & integer'image(c_WIDTH);
-    report "ADD_ERRORS: " & boolean'image(ADD_ERRORS);
-    wait;
-  end process;
 
 end behave;
